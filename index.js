@@ -1,8 +1,8 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules, Platform, ToastAndroid } from 'react-native';
 
 const RCTToast = Platform.select({
   ios: NativeModules.LRDRCTSimpleToast,
-  android: require('react-native').ToastAndroid,
+  android: ToastAndroid,
 });
 
 export default {
@@ -24,11 +24,21 @@ export default {
   },
 
   showWithGravity(message, duration, gravity, viewControllerBlacklist) {
-    RCTToast.showWithGravity(
-      message,
-      duration === undefined ? RCTToast.SHORT : duration,
-      gravity,
-      viewControllerBlacklist
-    );
+    if (Platform.OS === 'android') {
+      ToastAndroid.showWithGravityAndOffset(
+        message,
+        duration === undefined ? RCTToast.SHORT : duration,
+        gravity,
+        0,
+        400,
+      );
+    } else {
+      RCTToast.showWithGravity(
+        message,
+        duration === undefined ? RCTToast.SHORT : duration,
+        gravity,
+        viewControllerBlacklist
+      );
+    }
   },
 };
